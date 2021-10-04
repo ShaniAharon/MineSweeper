@@ -14,14 +14,18 @@ var gNumOfBombs = 2;
 var gFlagsCount = gNumOfBombs;
 var gIsFirstClick = true;
 var gEmptyCells;
+var gSafeClickes;
+var gFirstSafeClick = true;
 var gIsGameOver = false;
 var gIsWin = false;
 var gClickedCellsCounter = gBoardRowsSize * gBoardColsSize;
 var gIntervalTime;
 var gTimer = 0;
 var gLives = 3;
+var gSafeClicksCount = 3;
 var gIsUseHint = false;
-
+var gIsManuallMode = false;
+var gManuallBombsNum = gNumOfBombs;
 var gIsLevelBeginner = true;
 var gIsLevelMedium = false;
 var gIsLevelExpert = false;
@@ -47,6 +51,13 @@ function init() {
   updateFlagsCounterDom();
   updateTimerDom(0);
   updateLivesDom();
+  updateSafeClicksDom();
+}
+
+function manuallMode() {
+  gBoard = buildBoard(gBoardRowsSize, gBoardColsSize);
+  gIsManuallMode = true;
+  renderBoard(gBoard, '.gameBoard');
 }
 
 function restart(boardRowsSize = 4, boardColsSize = 4, numOfBombs = 2) {
@@ -57,14 +68,19 @@ function restart(boardRowsSize = 4, boardColsSize = 4, numOfBombs = 2) {
   gNumOfBombs = numOfBombs;
   gTimer = 0;
   gLives = 3;
+  gSafeClicksCount = 3;
   gFlagsCount = numOfBombs;
   gIsFirstClick = true;
+  gFirstSafeClick = true;
   gEmptyCells;
   gIsGameOver = false;
   gIsWin = false;
   gIsUseHint = false;
+  gIsManuallMode = false;
+  gManuallBombsNum = gNumOfBombs;
   changeSmileyDom(NORMAL);
   enableHintBtns();
+  enableSafeBtn();
   gClickedCellsCounter = gBoardRowsSize * gBoardColsSize;
   clearInterval(gIntervalTime);
   init();
@@ -197,6 +213,19 @@ function cellClicked(elCell, i, j) {
   if (gIsGameOver || gIsWin) return;
 
   var cell = gBoard[i][j];
+
+  if (gIsManuallMode) {
+    //model
+    cell.isBomb = true;
+    gManuallBombsNum--;
+    if (!gManuallBombsNum) {
+      setCellsNumOfBombsAround();
+      renderBoard(gBoard, '.gameBoard');
+      gIsManuallMode = false;
+      return;
+    }
+    return;
+  }
 
   if (gIsUseHint) {
     showHint(cell.coord);
@@ -380,6 +409,7 @@ function removeFlag(cell) {
   gFlagsCount++;
   gClickedCellsCounter++;
   updateFlagsCounterDom();
+  addColorTranspernt(cell.coord);
 }
 
 function updateFlagsCounterDom() {
@@ -402,6 +432,11 @@ function updateBestScoreDom(score) {
   elBestScore.innerText = score;
 }
 
+function updateSafeClicksDom() {
+  var elSafeNumber = document.querySelector('.safe-number');
+  elSafeNumber.innerText = gSafeClicksCount;
+}
+
 function changeSmileyDom(icon) {
   var elButton = document.querySelector('.btn-restart');
   elButton.innerText = icon;
@@ -416,6 +451,7 @@ function removeColorTranspernt(coord) {
 function addColorTranspernt(coord) {
   var elCell = document.querySelector(`#cell${coord.i}-${coord.j}`);
   elCell.style.color = 'transparent';
+  elCell.style.backgroundColor = 'blueviolet';
 }
 
 function updateRestartButtonDom() {
@@ -443,7 +479,10 @@ function showHint(coord) {
     for (var j = coord.j - 1; j <= coord.j + 1; j++) {
       if (j < 0 || j > gBoard[0].length - 1) continue;
       var cell = gBoard[i][j];
-      toggleHintClass(cell.coord);
+      if (!cell.isShown && !cell.isFlaged) {
+        toggleHintClass(cell.coord);
+        removeColorTranspernt(coord);
+      }
     }
   }
   setTimeout(() => {
@@ -457,7 +496,10 @@ function removeHint(coord) {
     for (var j = coord.j - 1; j <= coord.j + 1; j++) {
       if (j < 0 || j > gBoard[0].length - 1) continue;
       var cell = gBoard[i][j];
-      toggleHintClass(cell.coord);
+      if (!cell.isShown && !cell.isFlaged) {
+        toggleHintClass(cell.coord);
+        addColorTranspernt(cell.coord);
+      }
     }
   }
 }
@@ -465,6 +507,7 @@ function removeHint(coord) {
 function toggleHintClass(coord) {
   var elCell = document.querySelector(`#cell${coord.i}-${coord.j}`);
   elCell.classList.toggle('hint');
+  elCell.style.color = 'black';
 }
 
 function setAllLevelsFalse() {
@@ -475,7 +518,6 @@ function setAllLevelsFalse() {
 
 function checkUpdateBestScore() {
   if (gIsLevelBeginner) {
-    console.log('here');
     if (localStorage.bestScoreBeginner === undefined) {
       localStorage.setItem('bestScoreBeginner', gTimer);
       updateBestScoreDom(gTimer);
@@ -521,6 +563,46 @@ function checkUpdateBestScore() {
       gBestScores.expert = gTimer;
     }
   }
+}
+
+function showSafeClick() {
+  if (!gSafeClicksCount) {
+    var elBtnSafe = document.querySelector('.btn-safe');
+    elBtnSafe.disabled = true;
+    return;
+  }
+  if (gClickedCellsCounter - gNumOfBombs === 0) {
+    var elBtnSafe = document.querySelector('.btn-safe');
+    elBtnSafe.disabled = true;
+    return;
+  }
+  if (gFirstSafeClick) {
+    gSafeClickes = gEmptyCells.slice();
+    gFirstSafeClick = false;
+  }
+  var randCoord = drawRandCoord(gSafeClickes);
+  var cell = gBoard[randCoord.i][randCoord.j];
+  while (cell.isShown) {
+    var randCoord = drawRandCoord(gSafeClickes);
+    if (randCoord === undefined) {
+      var elBtnSafe = document.querySelector('.btn-safe');
+      elBtnSafe.disabled = true;
+      return;
+    }
+    var cell = gBoard[randCoord.i][randCoord.j];
+  }
+  var elCell = document.querySelector(`#cell${randCoord.i}-${randCoord.j}`);
+  elCell.classList.add('safe');
+  gSafeClicksCount--;
+  updateSafeClicksDom();
+  setTimeout(() => {
+    elCell.classList.remove('safe');
+  }, 1000);
+}
+
+function enableSafeBtn() {
+  var elBtnSafe = document.querySelector('.btn-safe');
+  elBtnSafe.disabled = false;
 }
 
 //return a rand coord from an array of coords
