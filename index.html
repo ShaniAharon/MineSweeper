@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body onload="init()">
+
+    <section class="level">
+      <label for="level">Choose a Level:</label>
+      <select id="level" onchange="changeLevel()">
+        <option value="beginner">Beginner </option>
+        <option value="medium">Medium</option>
+        <option value="expert">Expert</option>
+      </select>
+    </section>
+
+    <div class="info">
+      <p>🚩: <span class="flags-count"></span></p>
+      <p>Time: <span class="timer"></span></p>
+      <p>Lives: <span class="lives"></span></p>
+      <p>Hints:  <button class="btn-hint" onclick="useHint(this)">💡</button>
+                  <button class="btn-hint" onclick="useHint(this)">💡</button>
+                  <button class="btn-hint" onclick="useHint(this)">💡</button>
+     </p>
+    </div>
+
+   
+      
+    </option>
+    <!-- added on click event on js to make it dynamic  -->
+    <p>Best Score: <span class="best-score"></span></p>
+    <button class="btn-restart">🧐</button>
+    <table>
+      <tbody class="gameBoard"></tbody>
+    </table>
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
