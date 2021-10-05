@@ -90,7 +90,6 @@ function setSevenBoomBombs() {
 }
 
 function restart(boardRowsSize = 4, boardColsSize = 4, numOfBombs = 2) {
-  //TODO: fix bug when click in other level mode, reset the current board
   // set var
   gBoardRowsSize = boardRowsSize;
   gBoardColsSize = boardColsSize;
@@ -114,7 +113,7 @@ function restart(boardRowsSize = 4, boardColsSize = 4, numOfBombs = 2) {
   clearInterval(gIntervalTime);
   init();
 }
-//making the restart button dynamic , adopet to the current level
+//making the restart button dynamic , adapt to the current level
 updateRestartButtonDom();
 
 //show best score on the start
@@ -160,7 +159,6 @@ function buildBoard(Rows, Cols) {
       };
     }
   }
-  console.table(board);
   return board;
 }
 
@@ -180,7 +178,7 @@ function renderBoard(mat, selector) {
       var idName = 'cell' + i + '-' + j;
       strHTML += `<td id="${idName}" onclick="cellClicked(this, ${i}, ${j})" 
                                      oncontextmenu="putFlag(this, event, ${i}, ${j})" 
-                                     title="${i}-${j}" >  ${cellDisplay} </td>`;
+                                      >  ${cellDisplay} </td>`;
     }
     strHTML += '</tr>';
   }
@@ -209,8 +207,7 @@ function renderUndoMove(board) {
         cell.isFlaged = false;
         gFlagsCount++;
         console.log(gFlagsCount);
-        // if (cell.isBomb) gClickedCellsCounter++;
-        // gClickedCellsCounter++;
+
         updateFlagsCounterDom(gFlagsCount);
         addColorTranspernt(cell.coord);
       }
@@ -228,8 +225,6 @@ function undo() {
   updateTimerDom(gTimer);
   gLives = info.lives;
   updateLivesDom(gLives);
-  //TODO: fix safe clickes state , no track of that
-  //TODO: add hint track
   gSafeClicksCount = info.safeClicks;
   updateSafeClicksDom(gSafeClicksCount);
   gClickedCellsCounter = info.clickedCellsCounter;
@@ -312,7 +307,6 @@ function cellClicked(elCell, i, j) {
     elCell.innerText = BOMB;
     elCell.style.color = 'black';
     gManuallBombsNum--;
-    //can add time out soo it will wait a bit before start
     if (!gManuallBombsNum) {
       setCellsNumOfBombsAround();
       renderBoard(gBoard, '.gameBoard');
@@ -391,7 +385,6 @@ function colorCell(i, j, strColor) {
   cell.isShown = true;
 
   //DOM
-  //in undo need to put background color perpul and add transpernt
   var elCell = document.querySelector(`#cell${i}-${j}`);
   elCell.style.backgroundColor = strColor;
 
@@ -488,19 +481,11 @@ function putFlag(elCell, event, i, j) {
   cell.isFlaged = true;
   elCell.innerText = FLAG;
   gFlagsCount--;
-  // if (gUndoState.moves.length) {
-  //   //if flag a cell update the state of the flags in he undo
-  //   gUndoState.stateInfo[gUndoState.stateInfo.length - 1].flagsCount =
-  //     gFlagsCount;
-  // }
 
   if (cell.isBomb) gClickedCellsCounter--;
   updateFlagsCounterDom(gFlagsCount);
   removeColorTranspernt(cell.coord);
-  //check win
-  // if (gClickedCellsCounter === 0 && gFlagsCount === 0) {
-  //   winGame();
-  // }
+
   checkIsWin();
 }
 
@@ -511,7 +496,6 @@ function removeFlag(cell) {
   cell.isFlaged = false;
   gFlagsCount++;
   if (cell.isBomb) gClickedCellsCounter++;
-  // gClickedCellsCounter++;
   updateFlagsCounterDom(gFlagsCount);
   addColorTranspernt(cell.coord);
 }

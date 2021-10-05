@@ -12,11 +12,14 @@ body {
   background-size: cover;
   color: aliceblue;
 }
+button {
+  cursor: pointer;
+}
 
 .level {
   /* margin-top: 100px; */
   margin-right: 600px;
-  color: red;
+  color: white;
   font-size: large;
   font-weight: 700;
 }
@@ -41,7 +44,10 @@ table {
   position: absolute;
   margin-top: 45px;
   width: 200px;
-  background-image: url('https://images.unsplash.com/32/Mc8kW4x9Q3aRR3RkP5Im_IMG_4417.jpg?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fHdhbGxwYXBlcnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+  /* background-image: url('https://images.unsplash.com/32/Mc8kW4x9Q3aRR3RkP5Im_IMG_4417.jpg?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fHdhbGxwYXBlcnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'); */
+  background-image: url('https://images.unsplash.com/photo-1584079247326-05f7001058ee?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fGNhdmV8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60');
+  background-size: cover;
+  border-radius: 35%;
 }
 
 .score {
@@ -50,19 +56,30 @@ table {
   margin-left: 250px;
   margin-top: 75px;
   color: aliceblue;
-  background-image: url('https://media.istockphoto.com/photos/empty-blackboard-picture-id492819171?b=1&k=20&m=492819171&s=170667a&w=0&h=GjnpyoHteZMu_GWY1X9PvuD6tW939whZeC7zfdym13c=');
-  height: 200px;
+  /* background-image: url('https://media.istockphoto.com/photos/empty-blackboard-picture-id492819171?b=1&k=20&m=492819171&s=170667a&w=0&h=GjnpyoHteZMu_GWY1X9PvuD6tW939whZeC7zfdym13c='); */
+  background-image: url('https://images.unsplash.com/photo-1567753480694-9f96941c473b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Njh8fGNhdmV8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=60');
+  background-size: contain;
+  height: 100px;
+  border-radius: 25%;
 }
 
 .above-menu {
   display: flex;
   justify-content: center;
 }
+
 .time {
   position: absolute;
   padding-right: 0.5em;
   margin-left: 500px;
   margin-bottom: 30px;
+  border: 1px solid pink;
+}
+
+@media (max-width: 750px) {
+  .time {
+    margin-left: 450px;
+  }
 }
 
 /* .flag {
