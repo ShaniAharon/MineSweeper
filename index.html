@@ -9,6 +9,9 @@
   </head>
   <body onload="init()">
 
+
+    <h1>Mine Sweeper</h1>
+
     <section class="level">
       <label for="level">Choose a Level:</label>
       <select id="level" onchange="changeLevel()">
@@ -19,29 +22,47 @@
     </section>
 
     <div class="info">
-      <p>🚩: <span class="flags-count"></span></p>
-      <p>Time: <span class="timer"></span></p>
-      <p>Lives: <span class="lives"></span></p>
-      
+      <p class="flag">🚩: <span class="flags-count"></span></p>
+
+      <p>💖: <span class="lives"></span></p>
+      <p class="hints">  <button class="btn-hint" onclick="useHint(this)">💡</button>
+        <button class="btn-hint" onclick="useHint(this)">💡</button>
+        <button class="btn-hint" onclick="useHint(this)">💡</button>
+      </p>
     </div>
 
-    <p class="hints">Hints:  <button class="btn-hint" onclick="useHint(this)">💡</button>
-      <button class="btn-hint" onclick="useHint(this)">💡</button>
-      <button class="btn-hint" onclick="useHint(this)">💡</button>
-</p>
+    
       
     </option>
-    <!-- added on click event on js to make it dynamic  -->
-    <p>Best Score: <span class="best-score"></span></p>
-    <button class="btn-restart">🧐</button>
-    <table>
-      <tbody class="gameBoard"></tbody>
-    </table>
-    <br>
-     <button class="btn-safe" onclick="showSafeClick()">Safe Click</button>
-     <p><span class="safe-number"></span> clicks avalibale</p>
+    <div class="score">
+<!-- added on click event on js to make it dynamic  -->
+    <p ><u>Best Score</u> <br> <br><span class="best-score"></span></p>
+    </div>
+
+    <div class="container">
+      <p class="time">Time: <span class="timer"></span></p>
+
+      <div class="above-menu">
+        <button class="btn-restart">🧐</button>
+  
+      </div>
+      
+      <table>
+        <tbody class="gameBoard"></tbody>
+      </table>
+    </div>
     
-     <button class="manually" onclick="manuallMode()">Manually mode</button>
+    <br>
+
+    <div class="hero-buttons">
+      <button class="btn-safe" onclick="showSafeClick()">Safe Click : <span class="safe-number"></span> </button>
+      <!-- <p><span class="safe-number"></span> clicks avalibale</p> -->
+     
+      <button class="manually" onclick="manuallMode()">Manuall Mode</button>
+      
+      <button class="btn-undo" onclick="undo()">Undo</button>
+    </div>
+     
     
      <script src="utils.js"></script>
     <script src="main.js"></script>

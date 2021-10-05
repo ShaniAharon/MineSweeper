@@ -42,16 +42,25 @@ var gBestScores = {
     : 'first time',
 };
 
+var gUndoState = {
+  moves: [],
+  stateInfo: [],
+};
+
 function init() {
   gBoard = buildBoard(gBoardRowsSize, gBoardColsSize);
   setRandBombs(gNumOfBombs);
   setCellsNumOfBombsAround();
   renderBoard(gBoard, '.gameBoard');
   //display flags count to dom
-  updateFlagsCounterDom();
+  updateFlagsCounterDom(gFlagsCount);
   updateTimerDom(0);
-  updateLivesDom();
-  updateSafeClicksDom();
+  updateLivesDom(gLives);
+  updateSafeClicksDom(gSafeClicksCount);
+  gUndoState = {
+    moves: [],
+    stateInfo: [],
+  };
 }
 
 function manuallMode() {
@@ -160,6 +169,57 @@ function renderBoard(mat, selector) {
   elContainer.innerHTML = strHTML;
 }
 
+//undo logic
+function renderUndoMove(board) {
+  for (var i = 0; i < board.length; i++) {
+    for (var j = 0; j < board[0].length; j++) {
+      var cell = board[i][j];
+      var elCell = document.querySelector(`#cell${i}-${j}`);
+      elCell.innerText = cell.textContent;
+      if (!cell.isShown) {
+        var elCell = document.querySelector(`#cell${i}-${j}`);
+        elCell.style.backgroundColor = 'blueviolet';
+
+        addColorTranspernt(cell.coord);
+      }
+      if (cell.isFlaged) {
+        var elCell = document.querySelector(`#cell${i}-${j}`);
+        elCell.innerText = cell.textContent;
+        console.log(cell);
+        cell.isFlaged = false;
+        gFlagsCount++;
+        console.log(gFlagsCount);
+        // if (cell.isBomb) gClickedCellsCounter++;
+        // gClickedCellsCounter++;
+        updateFlagsCounterDom(gFlagsCount);
+        addColorTranspernt(cell.coord);
+      }
+    }
+  }
+}
+
+function undo() {
+  if (!gUndoState.moves.length) return;
+  gBoard = gUndoState.moves.pop();
+
+  //undo the info var
+  var info = gUndoState.stateInfo.pop();
+  gTimer = info.timer;
+  updateTimerDom(gTimer);
+  gLives = info.lives;
+  updateLivesDom(gLives);
+  //TODO: fix safe clickes state , no track of that
+  //TODO: add hint track
+  gSafeClicksCount = info.safeClicks;
+  updateSafeClicksDom(gSafeClicksCount);
+  gClickedCellsCounter = info.clickedCellsCounter;
+  gFlagsCount = info.flagsCount;
+  console.log(gFlagsCount);
+  updateFlagsCounterDom(gFlagsCount);
+  //rendr the previous move
+  renderUndoMove(gBoard);
+}
+
 //put random bombs on the board
 function setRandBombs(numOfBombs) {
   gEmptyCells = createCoordsArray();
@@ -213,7 +273,18 @@ function cellClicked(elCell, i, j) {
   if (gIsGameOver || gIsWin) return;
 
   var cell = gBoard[i][j];
-
+  if (!cell.isShown && !gIsUseHint) {
+    //keeping the state of the current move, using deep copy
+    gUndoState.moves.push(copyMat(gBoard));
+    var info = {
+      lives: gLives,
+      timer: gTimer,
+      safeClicks: gSafeClicksCount,
+      clickedCellsCounter: gClickedCellsCounter,
+      flagsCount: gFlagsCount,
+    };
+    gUndoState.stateInfo.push(info);
+  }
   if (gIsManuallMode) {
     //model
     cell.isBomb = true;
@@ -267,14 +338,14 @@ function cellClicked(elCell, i, j) {
   //clicked on a bomb lose life
   if (cell.isBomb && !cell.isShown) {
     gLives--;
-    updateLivesDom();
+    updateLivesDom(gLives);
     changeSmileyDom(STEPBOMB);
     setTimeout(() => {
       changeSmileyDom(NORMAL);
     }, 300);
   }
 
-  //if you clicked on a bomb , not on the first click game over
+  //if you clicked on a bomb , and no more lives
   if (!gIsFirstClick && cell.isBomb && !cell.isShown && gLives === 0) {
     gameOver();
     return;
@@ -290,7 +361,7 @@ function cellClicked(elCell, i, j) {
   checkIsWin();
 }
 
-//color the cells, show them , and check win on the way
+//color the cells, show them
 function colorCell(i, j, strColor) {
   //model
   var cell = gBoard[i][j];
@@ -300,6 +371,7 @@ function colorCell(i, j, strColor) {
   cell.isShown = true;
 
   //DOM
+  //in undo need to put background color perpul and add transpernt
   var elCell = document.querySelector(`#cell${i}-${j}`);
   elCell.style.backgroundColor = strColor;
 
@@ -396,8 +468,14 @@ function putFlag(elCell, event, i, j) {
   cell.isFlaged = true;
   elCell.innerText = FLAG;
   gFlagsCount--;
+  // if (gUndoState.moves.length) {
+  //   //if flag a cell update the state of the flags in he undo
+  //   gUndoState.stateInfo[gUndoState.stateInfo.length - 1].flagsCount =
+  //     gFlagsCount;
+  // }
+
   if (cell.isBomb) gClickedCellsCounter--;
-  updateFlagsCounterDom();
+  updateFlagsCounterDom(gFlagsCount);
   removeColorTranspernt(cell.coord);
   //check win
   // if (gClickedCellsCounter === 0 && gFlagsCount === 0) {
@@ -414,13 +492,13 @@ function removeFlag(cell) {
   gFlagsCount++;
   if (cell.isBomb) gClickedCellsCounter++;
   // gClickedCellsCounter++;
-  updateFlagsCounterDom();
+  updateFlagsCounterDom(gFlagsCount);
   addColorTranspernt(cell.coord);
 }
 
-function updateFlagsCounterDom() {
+function updateFlagsCounterDom(num) {
   var elFlagsCount = document.querySelector('.flags-count');
-  elFlagsCount.innerText = gFlagsCount;
+  elFlagsCount.innerText = num;
 }
 
 function updateTimerDom(time) {
@@ -428,9 +506,9 @@ function updateTimerDom(time) {
   elTimer.innerText = time;
 }
 
-function updateLivesDom() {
+function updateLivesDom(lives) {
   var elLives = document.querySelector('.lives');
-  elLives.innerText = gLives;
+  elLives.innerText = lives;
 }
 
 function updateBestScoreDom(score) {
@@ -438,9 +516,9 @@ function updateBestScoreDom(score) {
   elBestScore.innerText = score;
 }
 
-function updateSafeClicksDom() {
+function updateSafeClicksDom(num) {
   var elSafeNumber = document.querySelector('.safe-number');
-  elSafeNumber.innerText = gSafeClicksCount;
+  elSafeNumber.innerText = num;
 }
 
 function changeSmileyDom(icon) {
@@ -600,7 +678,7 @@ function showSafeClick() {
   var elCell = document.querySelector(`#cell${randCoord.i}-${randCoord.j}`);
   elCell.classList.add('safe');
   gSafeClicksCount--;
-  updateSafeClicksDom();
+  updateSafeClicksDom(gSafeClicksCount);
   setTimeout(() => {
     elCell.classList.remove('safe');
   }, 1000);
