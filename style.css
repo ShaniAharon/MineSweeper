@@ -15,6 +15,14 @@ table {
   margin: auto;
 }
 
+.hints {
+  display: inline-block;
+  /* left: 20px; */
+  margin-left: 155px;
+  position: absolute;
+  margin-top: 45px;
+}
+
 .gameBoard td {
   border: 1px solid;
   width: 25px;

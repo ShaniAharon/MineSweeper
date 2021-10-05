@@ -37,6 +37,18 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
+//using deep copy
+function copyMat(mat) {
+  var copy = [];
+  for (var i = 0; i < mat.length; i++) {
+    copy[i] = [];
+    for (var j = 0; j < mat[0].length; j++) {
+      copy[i][j] = JSON.parse(JSON.stringify(mat[i][j]));
+    }
+  }
+  return copy;
+}
+
 // i can use it
 // function drawRandNum(numbers) {
 //   var idx = getRandomInt(0, numbers.length - 1);

@@ -217,7 +217,11 @@ function cellClicked(elCell, i, j) {
   if (gIsManuallMode) {
     //model
     cell.isBomb = true;
+    elCell.style.backgroundColor = 'white';
+    elCell.innerText = BOMB;
+    elCell.style.color = 'black';
     gManuallBombsNum--;
+    //can add time out soo it will wait a bit before start
     if (!gManuallBombsNum) {
       setCellsNumOfBombsAround();
       renderBoard(gBoard, '.gameBoard');
@@ -283,6 +287,7 @@ function cellClicked(elCell, i, j) {
   if (cell.numOfBombsAround === 0 && !cell.isBomb) {
     showAllEmptys(cell.coord);
   }
+  checkIsWin();
 }
 
 //color the cells, show them , and check win on the way
@@ -290,14 +295,8 @@ function colorCell(i, j, strColor) {
   //model
   var cell = gBoard[i][j];
 
-  //if clicked on a cell not a bomb increment the counter
+  //if clicked on a cell decrement the counter
   if (strColor !== 'red' && !cell.isShown) gClickedCellsCounter--;
-
-  //check for victory
-  if (gClickedCellsCounter === 0 && gFlagsCount >= 0 && gLives > 0) {
-    winGame();
-  }
-
   cell.isShown = true;
 
   //DOM
@@ -319,9 +318,14 @@ function gameOver() {
   console.log('you lost..');
 }
 
+function checkIsWin() {
+  //check for victory
+  if (gClickedCellsCounter === 0 && gFlagsCount >= 0 && gLives > 0) {
+    winGame();
+  }
+}
+
 function winGame() {
-  // fix when there are 2 flags on empty cells and all the bomb show,
-  //prevent from win , and allow only when all the cells show with no flag on them
   gIsWin = true;
   clearInterval(gIntervalTime);
   changeSmileyDom(WIN);
@@ -392,13 +396,14 @@ function putFlag(elCell, event, i, j) {
   cell.isFlaged = true;
   elCell.innerText = FLAG;
   gFlagsCount--;
-  gClickedCellsCounter--;
+  if (cell.isBomb) gClickedCellsCounter--;
   updateFlagsCounterDom();
   removeColorTranspernt(cell.coord);
   //check win
-  if (gClickedCellsCounter === 0 && gFlagsCount === 0) {
-    winGame();
-  }
+  // if (gClickedCellsCounter === 0 && gFlagsCount === 0) {
+  //   winGame();
+  // }
+  checkIsWin();
 }
 
 function removeFlag(cell) {
@@ -407,7 +412,8 @@ function removeFlag(cell) {
   elCell.innerText = cell.textContent;
   cell.isFlaged = false;
   gFlagsCount++;
-  gClickedCellsCounter++;
+  if (cell.isBomb) gClickedCellsCounter++;
+  // gClickedCellsCounter++;
   updateFlagsCounterDom();
   addColorTranspernt(cell.coord);
 }
