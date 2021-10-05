@@ -69,6 +69,26 @@ function manuallMode() {
   renderBoard(gBoard, '.gameBoard');
 }
 
+function SevenBoom() {
+  gBoard = buildBoard(gBoardRowsSize, gBoardColsSize);
+  setSevenBoomBombs();
+  setCellsNumOfBombsAround();
+  renderBoard(gBoard, '.gameBoard');
+}
+
+function setSevenBoomBombs() {
+  var countSevenMult = 0;
+  for (var i = 0; i < gBoard.length; i++) {
+    for (var j = 0; j < gBoard[0].length; j++) {
+      countSevenMult++;
+      if (countSevenMult % 7 === 0) {
+        var cell = gBoard[i][j];
+        cell.isBomb = true;
+      }
+    }
+  }
+}
+
 function restart(boardRowsSize = 4, boardColsSize = 4, numOfBombs = 2) {
   //TODO: fix bug when click in other level mode, reset the current board
   // set var

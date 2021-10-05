@@ -47,8 +47,8 @@ table {
 .score {
   position: absolute;
   width: 100px;
-  margin-left: 300px;
-  margin-top: 95px;
+  margin-left: 250px;
+  margin-top: 75px;
   color: aliceblue;
   background-image: url('https://media.istockphoto.com/photos/empty-blackboard-picture-id492819171?b=1&k=20&m=492819171&s=170667a&w=0&h=GjnpyoHteZMu_GWY1X9PvuD6tW939whZeC7zfdym13c=');
   height: 200px;
@@ -90,7 +90,7 @@ table {
 }
 
 .hero-buttons {
-  margin-top: 1.5em;
+  margin-top: 1em;
   display: flex;
   justify-content: center;
 }
