@@ -210,7 +210,6 @@ function renderUndoMove(board) {
         elCell.innerText = FLAG;
         elCell.style.backgroundColor = 'blueviolet';
 
-        gFlagsCount--;
         // updateFlagsCounterDom(gFlagsCount);
         removeColorTranspernt(cell.coord);
       }
@@ -726,6 +725,7 @@ function showSafeClick() {
     elBtnSafe.disabled = true;
     return;
   }
+  //fix make the button disabled after click on a bomb
   if (gClickedCellsCounter - gNumOfBombs === 0) {
     var elBtnSafe = document.querySelector('.btn-safe');
     elBtnSafe.disabled = true;
