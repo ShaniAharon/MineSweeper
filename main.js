@@ -59,6 +59,7 @@ function init() {
   updateSafeClicksDom(gSafeClicksCount);
   gUndoState = {
     moves: [],
+    flags: [],
     stateInfo: [],
   };
 }
@@ -192,24 +193,23 @@ function renderUndoMove(board) {
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board[0].length; j++) {
       var cell = board[i][j];
-      var elCell = document.querySelector(`#cell${i}-${j}`);
-      elCell.innerText = cell.textContent;
-      if (!cell.isShown) {
+
+      if (!cell.isShown && !cell.isFlaged) {
         var elCell = document.querySelector(`#cell${i}-${j}`);
         elCell.style.backgroundColor = 'blueviolet';
-
+        var elCell = document.querySelector(`#cell${i}-${j}`);
+        elCell.innerText = cell.textContent;
         addColorTranspernt(cell.coord);
       }
       if (cell.isFlaged) {
+        cell.isFlaged = true;
         var elCell = document.querySelector(`#cell${i}-${j}`);
-        elCell.innerText = cell.textContent;
-        console.log(cell);
-        cell.isFlaged = false;
-        gFlagsCount++;
-        console.log(gFlagsCount);
+        elCell.innerText = FLAG;
+        elCell.style.backgroundColor = 'blueviolet';
 
-        updateFlagsCounterDom(gFlagsCount);
-        addColorTranspernt(cell.coord);
+        gFlagsCount--;
+        // updateFlagsCounterDom(gFlagsCount);
+        removeColorTranspernt(cell.coord);
       }
     }
   }
@@ -217,6 +217,12 @@ function renderUndoMove(board) {
 
 function undo() {
   if (!gUndoState.moves.length) return;
+  //reset first Move logic if you undo to the start
+  if (gUndoState.moves.length === 1) {
+    gIsFirstClick = true;
+    //prevent from creating more time intervals
+    clearInterval(gIntervalTime);
+  }
   gBoard = gUndoState.moves.pop();
 
   //undo the info var
@@ -443,7 +449,7 @@ function showAllEmptys(coord) {
       if (j < 0 || j > gBoard[0].length - 1) continue;
       var cell = gBoard[i][j];
 
-      if (cell.isFlaged) removeFlag(cell);
+      if (cell.isFlaged) removeFlag(cell, true);
 
       if (!cell.isShown) {
         // !cell.isShown prevent from max call stack
@@ -478,6 +484,15 @@ function putFlag(elCell, event, i, j) {
     addColorTranspernt(cell.coord);
     return;
   }
+  gUndoState.moves.push(copyMat(gBoard));
+  var info = {
+    lives: gLives,
+    timer: gTimer,
+    safeClicks: gSafeClicksCount,
+    clickedCellsCounter: gClickedCellsCounter,
+    flagsCount: gFlagsCount,
+  };
+  gUndoState.stateInfo.push(info);
   cell.isFlaged = true;
   elCell.innerText = FLAG;
   gFlagsCount--;
@@ -489,10 +504,21 @@ function putFlag(elCell, event, i, j) {
   checkIsWin();
 }
 
-function removeFlag(cell) {
+function removeFlag(cell, dontCopy = false) {
   //put back the real cell content
   var elCell = document.querySelector(`#cell${cell.coord.i}-${cell.coord.j}`);
   elCell.innerText = cell.textContent;
+  if (!dontCopy) {
+    gUndoState.moves.push(copyMat(gBoard));
+    var info = {
+      lives: gLives,
+      timer: gTimer,
+      safeClicks: gSafeClicksCount,
+      clickedCellsCounter: gClickedCellsCounter,
+      flagsCount: gFlagsCount,
+    };
+    gUndoState.stateInfo.push(info);
+  }
   cell.isFlaged = false;
   gFlagsCount++;
   if (cell.isBomb) gClickedCellsCounter++;
