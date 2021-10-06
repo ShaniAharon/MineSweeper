@@ -92,6 +92,86 @@ table {
   margin-top: 15px;
 }
 
+/* .gameBoard td:hover {
+  background-color: rgb(228, 189, 228) !important;
+} */
+
+/* .modal {
+  font-size: 3rem;
+  color: #ff7878;
+  width: 300px;
+  height: 300px;
+  display: none;
+  background-color: aqua;
+  border-radius: 15%;
+  position: absolute;
+  margin-top: 4rem;
+  text-align: center;
+  animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} */
+
+.modal span {
+  font-size: 50px;
+}
+
+video {
+  display: none;
+  position: absolute;
+  width: 300px;
+  height: 400px;
+  margin-left: 500px;
+  z-index: 1;
+  animation: fadeIn 1s forwards;
+}
+
+.modal button {
+  display: block;
+  margin: auto;
+  padding: 0.5em;
+  font-weight: 700;
+  background-color: cornflowerblue;
+  border: 3px solid burlywood;
+  border-radius: 30%;
+}
+
+.modal button:hover {
+  background-color: rgb(173, 191, 226);
+}
+
+.modal {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  width: 300px;
+  height: 300px;
+  margin-left: 500px;
+  margin-top: 100px;
+  border-radius: 15%;
+  animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .gameBoard td {
   border: 1px solid;
   width: 28px;
@@ -101,11 +181,6 @@ table {
   background-color: blueviolet;
   color: transparent;
 }
-
-/* TODO: fix show hover also after undo */
-/* .gameBoard td:hover {
-  background-color: rgb(241, 124, 163);
-} */
 
 .hero-buttons {
   margin-top: 1em;

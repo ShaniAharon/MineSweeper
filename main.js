@@ -30,6 +30,7 @@ var gManuallBombsNum = gNumOfBombs;
 var gIsLevelBeginner = true;
 var gIsLevelMedium = false;
 var gIsLevelExpert = false;
+var gAudio;
 
 var gBestScores = {
   beginner: localStorage.bestScoreBeginner
@@ -414,6 +415,7 @@ function gameOver() {
     changeSmileyDom(LOSE);
   }, 300);
   console.log('you lost..');
+  displayModal(false);
 }
 
 function checkIsWin() {
@@ -433,6 +435,37 @@ function winGame() {
   }, 300);
   checkUpdateBestScore();
   console.log('you win!');
+  displayModal(true);
+}
+
+function displayModal(isWin) {
+  var elModal = document.querySelector('.modal');
+  var elText = document.querySelector('.modal h2');
+  var elSpan = document.querySelector('.modal span');
+  var elVideo = document.querySelector('video');
+  elModal.style.display = 'block';
+  elVideo.style.display = 'block';
+  if (isWin) {
+    elVideo.src = 'src/fireWorksVid.mp4';
+    elText.innerText = 'You Win!';
+    elSpan.innerText = '🤩';
+    gAudio = new Audio('src/music.mp3');
+  } else {
+    elVideo.src = 'src/lose.mp4';
+    elText.innerText = 'You Lose..';
+    elSpan.innerText = '😭';
+    gAudio = new Audio('src/lost.mp3');
+  }
+
+  gAudio.play();
+}
+
+function closeModal() {
+  var elModal = document.querySelector('.modal');
+  var elVideo = document.querySelector('video');
+  elModal.style.display = 'none';
+  elVideo.style.display = 'none';
+  gAudio.pause();
 }
 
 //color all the bombs in red
