@@ -102,9 +102,10 @@ table {
   color: transparent;
 }
 
-.gameBoard td:hover {
+/* TODO: fix show hover also after undo */
+/* .gameBoard td:hover {
   background-color: rgb(241, 124, 163);
-}
+} */
 
 .hero-buttons {
   margin-top: 1em;

@@ -23,6 +23,7 @@ var gIntervalTime;
 var gTimer = 0;
 var gLives = 3;
 var gSafeClicksCount = 3;
+// var gHintsCount = 3;
 var gIsUseHint = false;
 var gIsManuallMode = false;
 var gManuallBombsNum = gNumOfBombs;
@@ -45,6 +46,7 @@ var gBestScores = {
 var gUndoState = {
   moves: [],
   stateInfo: [],
+  hintsTrack: [],
 };
 
 function init() {
@@ -59,8 +61,8 @@ function init() {
   updateSafeClicksDom(gSafeClicksCount);
   gUndoState = {
     moves: [],
-    flags: [],
     stateInfo: [],
+    hintsTrack: [],
   };
 }
 
@@ -235,8 +237,13 @@ function undo() {
   updateSafeClicksDom(gSafeClicksCount);
   gClickedCellsCounter = info.clickedCellsCounter;
   gFlagsCount = info.flagsCount;
-  console.log(gFlagsCount);
   updateFlagsCounterDom(gFlagsCount);
+
+  if (gUndoState.hintsTrack.length) {
+    var elButton = document.querySelector(`#${gUndoState.hintsTrack.pop()}`);
+    elButton.disabled = false;
+  }
+
   //rendr the previous move
   renderUndoMove(gBoard);
 }
@@ -578,6 +585,7 @@ function updateRestartButtonDom() {
 function useHint(elButton) {
   elButton.disabled = true;
   gIsUseHint = true;
+  gUndoState.hintsTrack.push(elButton.id);
 }
 
 function enableHintBtns() {
@@ -707,7 +715,15 @@ function showSafeClick() {
   }
   var elCell = document.querySelector(`#cell${randCoord.i}-${randCoord.j}`);
   elCell.classList.add('safe');
+  //track safe clicks, has some bugs fix them
+  if (gUndoState.stateInfo.length) {
+    gUndoState.stateInfo[gUndoState.stateInfo.length - 1].safeClicks =
+      gSafeClicksCount;
+    console.log(gSafeClicksCount);
+  }
+
   gSafeClicksCount--;
+
   updateSafeClicksDom(gSafeClicksCount);
   setTimeout(() => {
     elCell.classList.remove('safe');
